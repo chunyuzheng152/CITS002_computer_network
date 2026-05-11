@@ -1,23 +1,24 @@
 # protocol.py
-
+import struct
 
 # Person A writes this class: Layer 4 UDP-like segment.
 class Segment:
-    def __init__(self, src_port, dst_port, data, seg_type, seq_num):
-        self.src_port = src_port
-        self.dst_port = dst_port
-        self.data = data
-        self.type = seg_type
-        self.seq_num = seq_num
-        self.length = 10 + len(data)
+    def __init__(self, src_port, dst_port, seg_type, seq_num, data=""):
+        self.src_port = src_port    # 2 bytes
+        self.dst_port = dst_port    # 2 bytes
+        self.seg_type = seg_type        # 1 byte(0:DATA, 1:ACK)
+        self.seq_num = seq_num          # 1 byte(0 or 1)
+        self.data = data                # variable length
+        self.length = 10 + len(data)    # 2 bytes
+
+        self.checksum = 0
         self.checksum = self.calculate_checksum()
 
     def calculate_checksum(self):
-        total = 0
-        text = str(self.src_port) + str(self.dst_port) + self.data + str(self.type) + str(self.seq_num)
-        for char in text:
-            total += ord(char)
-        return total % 256
+        format_string = "!HHHHBB"
+        header_bytes = struct.pack(format_string, self.src_port, self.dst_port, self.length, 0, self.seg_type, self.seq_num)
+        total = sum(header_bytes) + sum(self.data.encode('utf-8'))
+        return total % 65536
 
     def verify_checksum(self):
         return self.checksum == self.calculate_checksum()
