@@ -1,4 +1,4 @@
-from protocol import Packet, Frame
+from protocol import Packet, Frame, Segment
 from config import *
 
 def get_network_for_ip(ip):
@@ -30,10 +30,84 @@ class Host:
             self.mac_table = {}
 
         self.learned_macs = set()
+
+        self.seq_num = 0
+        self.waiting_for_ack = False
+
+        self.expected_seq_num = 0
+        self.last_ack_sent = 1
+
+
     def send_data(self, dst_ip, data, network):
-        pass
+        print(f"{self.name}: Layer 4: Data received from Application Layer. Data size ={len(data)}")
+
+        chunks = [data[i:i+MAX_SEGMENT_DATA_SIZE] for i in range(0, len(data), MAX_SEGMENT_DATA_SIZE)]
+
+        if not chunks:
+            chunks = [""]
+
+        for chunk in chunks:
+            self.waiting_for_ack = True
+
+            while self.waiting_for_ack:
+                segment = Segment(
+                    src_port=SRC_PORT,
+                    dst_port=DST_PORT,
+                    seg_type=DATA,
+                    seq_num=self.seq_num,
+                    data=chunk
+                )
+
+                print(f"{self.name}: Layer 4: Checksum computed")
+
+                print(f"{self.name}: Layer 4: Segment created by adding transport layer header (DATA, seq={self.seq_num}) (encapsulation)")
+                print(f"{self.name}: Layer 4: Segment sent to Network Layer")
+
+                self.send_segment(dst_ip, segment, network)
+            self.seq_num = 1 - self.seq_num
+
     def receive_segment(self, segment, src_ip, network):
-        pass
+        print(f"{self.name}: Layer 4: Segment received from Network Layer")
+        
+        if not segment.verify_checksum():
+            print(f"{self.name}: Layer 4: Segment discarded due to checksum error")
+
+            if segment.seg_type == DATA:
+                self.send_ack(src_ip, self.last_ack_sent, network)
+            return
+        print(f"{self.name}: Layer 4: Checksum verified")
+
+        if segment.seg_type == ACK:
+            print(f"{self.name}: Layer 4: ACK received: seq={segment.seq_num}")
+
+            if self.waiting_for_ack and segment.seq_num == self.seq_num:
+                self.waiting_for_ack = False
+            else:
+                print(f"{self.name}: Layer 4: Segment retransmitted due to incorrect ACK")
+        
+        elif segment.seg_type == DATA:
+            if segment.seq_num == self.expected_seq_num:
+
+                print(f"{self.name}: Layer 4: DATA segment delivered to Application Layer. Data size ={len(segment.data)}")
+                
+                self.send_ack(src_ip, segment.seq_num, network)
+
+                self.last_ack_sent = segment.seq_num
+                self.expected_seq_num = 1 - self.expected_seq_num
+            else:
+                self.send_ack(src_ip, self.last_ack_sent, network)
+    
+    def send_ack(self, dst_ip, ack_seq_num, network):
+        ack_segment = Segment(
+            src_port=DST_PORT,
+            dst_port=SRC_PORT,
+            seg_type=ACK,
+            seq_num=ack_seq_num,
+            data=""
+        )
+        print(f"{self.name}: Layer 4: Segment created by adding transport layer header (ACK, seq={ack_seq_num})")
+        print(f"{self.name}: Layer 4: Segment sent to Network Layer")
+        self.send_segment(dst_ip, ack_segment, network)
 
     def send_segment(self, dst_ip, segment, network):
         packet = Packet(
