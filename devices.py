@@ -91,6 +91,14 @@ class Host:
 
     def receive_frame(self, frame, network):
         print(f"{self.name}: Layer 2: Frame received")
+        # Check if frame is for this host
+        if frame.dst_mac != self.mac:
+            print(f"{self.name}: Layer 2: Frame not for this host. Frame dropped.")
+            return
+        #check eth_type
+        if frame.eth_type != ETH_TYPE_IPV4:
+            print(f"{self.name}: Layer 2: Unsupported eth_type. Frame dropped.")
+            return
 
         self.learned_macs.add(frame.src_mac)
         print(f"{self.name}: Layer 2: Source MAC learned: {frame.src_mac}")
@@ -140,6 +148,16 @@ class Router:
         
         print(f"{self.name}: Layer 2: Frame received on {incoming_interface}")
 
+        interface_mac = self.interfaces[incoming_interface]["mac"]
+        # Check if frame is for this router
+        if frame.dst_mac != interface_mac:
+            print(f"{self.name}: Layer 2: Frame not for this interface. Frame dropped.")
+            return
+        #check eth_type
+        if frame.eth_type != ETH_TYPE_IPV4:
+            print(f"{self.name}: Layer 2: Unsupported eth_type. Frame dropped.")
+            return
+        
         self.learned_macs[frame.src_mac] = incoming_interface
         print(f"{self.name}: Layer 2: Source MAC learned: {frame.src_mac} on {incoming_interface}")
 
