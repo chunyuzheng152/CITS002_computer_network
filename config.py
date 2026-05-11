@@ -8,15 +8,15 @@
 HOST_A_IP = "10.0.1.10"
 HOST_B_IP = "10.0.2.20"
 
-ROUTER_R1_IF1_IP = "10.0.1.1"
-ROUTER_R1_IF2_IP = "10.0.2.1"
+ROUTER_R1_INTERFACE_1_IP = "10.0.1.1"
+ROUTER_R1_INTERFACE_2_IP = "10.0.2.1"
 
 # MAC addresses
 HOST_A_MAC = "AA:AA:AA:AA:AA:AA"
 HOST_B_MAC = "DD:DD:DD:DD:DD:DD"
 
-ROUTER_R1_IF1_MAC = "BB:BB:BB:BB:BB:BB"
-ROUTER_R1_IF2_MAC = "CC:CC:CC:CC:CC:CC"
+ROUTER_R1_INTERFACE_1_MAC = "BB:BB:BB:BB:BB:BB"
+ROUTER_R1_INTERFACE_2_MAC = "CC:CC:CC:CC:CC:CC"
 
 # Network addresses
 NETWORK_1 = "10.0.1.0/24"
@@ -27,7 +27,7 @@ ETH_TYPE_IPV4 = "0x0800"
 IP_PROTOCOL_UDP = 17
 
 # TTL
-DEFAULT_TTL = 4
+DEFAULT_TTL = 100
 
 # Transport constants
 SRC_PORT = 5000
@@ -39,13 +39,15 @@ ACK = 1
 # Maximum data size for one UDP-like segment
 MAX_SEGMENT_DATA_SIZE = 500
 
+INTERFACE_1 = "Interface 1"
+INTERFACE_2 = "Interface 2"
 # MAC lookup tables
 HOST_A_MAC_TABLE = {
-    ROUTER_R1_IF1_IP: ROUTER_R1_IF1_MAC
+    ROUTER_R1_INTERFACE_1_IP: ROUTER_R1_INTERFACE_1_MAC
 }
 
 HOST_B_MAC_TABLE = {
-    ROUTER_R1_IF2_IP: ROUTER_R1_IF2_MAC
+    ROUTER_R1_INTERFACE_2_IP: ROUTER_R1_INTERFACE_2_MAC
 }
 
 ROUTER_R1_MAC_TABLE = {
@@ -56,14 +58,14 @@ ROUTER_R1_MAC_TABLE = {
 # Routing tables
 HOST_A_ROUTING_TABLE = {
     NETWORK_2: {
-        "next_hop": ROUTER_R1_IF1_IP,
+        "next_hop": ROUTER_R1_INTERFACE_1_IP,
         "interface": "host_a_if"
     }
 }
 
 HOST_B_ROUTING_TABLE = {
     NETWORK_1: {
-        "next_hop": ROUTER_R1_IF2_IP,
+        "next_hop": ROUTER_R1_INTERFACE_2_IP,
         "interface": "host_b_if"
     }
 }
