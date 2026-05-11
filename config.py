@@ -72,11 +72,11 @@ HOST_B_ROUTING_TABLE = {
 
 ROUTER_R1_ROUTING_TABLE = {
     NETWORK_1: {
-        "next_hop": "None",
-        "interface": "if1"
+        "next_hop": None,
+        "interface": INTERFACE_1
     },
     NETWORK_2: {
-        "next_hop": "None",
-        "interface": "if2"
+        "next_hop": None,
+        "interface": INTERFACE_2
     }
 }
