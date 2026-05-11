@@ -23,7 +23,6 @@ class Segment:
         return self.checksum == self.calculate_checksum()
 
 
-# Person B writes this class: Layer 3 IP-like packet.
 class Packet:
     def __init__(self, src_ip, dst_ip, ttl, protocol, payload):
         self.src_ip = src_ip
@@ -35,9 +34,8 @@ class Packet:
 
     def decrement_ttl(self):
         self.ttl -= 1
+        return self.ttl
 
-
-# Person B writes this class: Layer 2 Ethernet-like frame.
 class Frame:
     def __init__(self, src_mac, dst_mac, eth_type, payload):
         self.src_mac = src_mac
