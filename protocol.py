@@ -1,7 +1,7 @@
 # protocol.py
 import struct
 
-# Person A writes this class: Layer 4 UDP-like segment.
+# Person B writes this class: Layer 4 UDP-like segment.
 class Segment:
     def __init__(self, src_port, dst_port, seg_type, seq_num, data=""):
         self.src_port = src_port    # 2 bytes
