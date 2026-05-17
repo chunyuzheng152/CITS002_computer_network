@@ -42,8 +42,15 @@ Layer 3 is used for IP addressing, routing, forwarding, and delivering the segme
 Router R1 performs routing table lookup and selects the outgoing interface before forwarding the packet.
 
 Layer 4:Transport Layer
+Layer 4 uses a UDP-like segment with ACK support
+The Segment class stores the Layer 4 header fields, including source port, destination port, length, checksum, type (0 for DATA, 1 for ACK), sequence number (0 or 1), and the application data
+Layer 4 is responsible for port-based delivery, segmentation, error detection, and reliable data transfer
 
-###
+Key functionalities implemented include:
+Segmentation: The maximum data size for a segment is limited to 500 bytes. If the application message exceeds this limit, it is segmented into multiple chunks.
+Reliable Data Transfer (rdt2.2): The transport layer implements the rdt2.2 Alternating-Bit Protocol. The sender alternates sequence numbers between 0 and 1 for each DATA segment. 
+Error Detection: A checksum is computed for each segment before transmission. The receiver verifies this checksum and discards the segment if it is corrupted.
+ACK & Retransmission: Upon receiving a valid DATA segment, the receiver delivers it to the application and sends an ACK with the corresponding sequence number. If a segment is corrupted or is a duplicate, the receiver re-sends the last ACK. The sender waits for the correct ACK and will retransmit the current segment if an incorrect or duplicate ACK is received.
 
 
 
