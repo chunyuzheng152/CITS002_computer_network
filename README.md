@@ -1,4 +1,7 @@
 # CITS3002_computer_network
+# Mini Internet Protocol Stack Simulator
+
+#group members
 chunyu_zheng 24279373
 Fubin Qiu 23673779
 
@@ -9,10 +12,21 @@ Overview
 It simulates how data is sent from A to B through Router R1 using layer 2, layer 3, layer 4.
 
 
-Host A 10.0.1.10
-R1 interface 1 10.0.1.1
-R1 interface 2 10.0.2.1
-Host B 10.0.2.20
+## Network Topology
+
+### IP Addresses
+
+- Host A: 10.0.1.10
+- Router R1 Interface 1: 10.0.1.1
+- Router R1 Interface 2: 10.0.2.1
+- Host B: 10.0.2.20
+
+### MAC Addresses
+
+- Host A: AA:AA:AA:AA:AA:AA
+- Router R1 Interface 1: BB:BB:BB:BB:BB:BB
+- Router R1 Interface 2: CC:CC:CC:CC:CC:CC
+- Host B: DD:DD:DD:DD:DD:DD
 
 main.py: starts the simulation.
 config.py: stores fixed IP, MAC, and constants.
@@ -20,11 +34,24 @@ protocol.py: stores Segment, Packet, and Frame classes.
 devices.py: stores Host and Router classes.
 README.md: explains the project.
 
-Run the program form the project root diectory
-  python main.py 10/100<message_size>
+# Run the program form the project root diectory
+  python main.py <message_size>
+  such as 
+  python main.py 10
+  python main.py 500
+  python main.py 501
+  python main.py 1000
+
 
 The maximum data size for one udp_like segment is 500 bytes.
 If the message size is larger than 500 bytes, the message is split into multiple segments and sent sequentially.
+
+## Requirements
+
+- Python 3
+- No external libraries are required.
+- Only Python standard libraries are used.
+- Networking libraries such as socket are not used.
 
 Layer 2:Data Link Layer
 Layer 2 uses an Ethernet-like frame.
@@ -54,14 +81,11 @@ ACK & Retransmission: Upon receiving a valid DATA segment, the receiver delivers
 
 
 
-Output
+
+## Output and Logging
+
 The program prints logs for each layer.
-The logs show the process of encapsulation, routing, forwarding, MAC address lookup, TTL decrement, checksum verification, ACK transmission, and data delivery.
 
-
-Assumptions
-There is no real packet loss.
-There is no real frame corruption.
-All transmissions are deterministic.
-Only Python standard libraries are used.
-No socket or external networking library is used.
+- Layer 2 frame creation, MAC address lookup, MAC learning, frame forwarding, and delivery to Layer 3.
+- Layer 3 packet creation, routing table lookup, next-hop decision, TTL decrement, and delivery to Layer 4.
+- Layer 4 segmentation, checksum computation, checksum verification, DATA segment transmission, ACK transmission, and retransmission handling.
