@@ -37,7 +37,7 @@ class Host:
         self.expected_seq_num = 0
         self.last_ack_sent = 1
 
-
+    # App layer interface
     def send_data(self, dst_ip, data, network):
         print(f"{self.name}: Layer 4: Data received from Application Layer. Data size ={len(data)}")
 
@@ -66,6 +66,7 @@ class Host:
                 self.send_segment(dst_ip, segment, network)
             self.seq_num = 1 - self.seq_num
 
+    # handle incoming segment from network layer
     def receive_segment(self, segment, src_ip, network):
         print(f"{self.name}: Layer 4: Segment received from Network Layer")
         
@@ -97,6 +98,7 @@ class Host:
             else:
                 self.send_ack(src_ip, self.last_ack_sent, network)
     
+    # send ACK segment
     def send_ack(self, dst_ip, ack_seq_num, network):
         ack_segment = Segment(
             src_port=DST_PORT,
@@ -109,6 +111,7 @@ class Host:
         print(f"{self.name}: Layer 4: Segment sent to Network Layer")
         self.send_segment(dst_ip, ack_segment, network)
 
+    # layer 3 logic
     def send_segment(self, dst_ip, segment, network):
         packet = Packet(
             src_ip=self.ip,
@@ -163,6 +166,7 @@ class Host:
         elif self.ip == HOST_B_IP:
             network["router"].receive_frame(frame, INTERFACE_2, network)
 
+    # unpack
     def receive_frame(self, frame, network):
         print(f"{self.name}: Layer 2: Frame received")
         # Check if frame is for this host
@@ -182,6 +186,8 @@ class Host:
         packet = frame.payload
         self.receive_packet(packet, network)
 
+
+    # parse packet and handle it
     def receive_packet(self, packet, network):
         
         print(f"{self.name}: Layer 3: Packet received from Data Link Layer: SRC_IP={packet.src_ip}, DST_IP={packet.dst_ip}, TTL={packet.ttl}")
@@ -218,6 +224,7 @@ class Router:
 
         self.learned_macs = {}
 
+    # router L2 processing and port learning
     def receive_frame(self, frame, incoming_interface, network):
         
         print(f"{self.name}: Layer 2: Frame received on {incoming_interface}")
@@ -240,6 +247,7 @@ class Router:
         packet = frame.payload
         self.forward_packet(packet, network)
 
+    # router L3 processing
     def forward_packet(self, packet, network):
 
         # Layer 3: receive packet from Layer 2
