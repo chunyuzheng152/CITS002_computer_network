@@ -23,23 +23,25 @@ class Segment:
     def verify_checksum(self):
         return self.checksum == self.calculate_checksum()
 
-
+# Layer 3 IP-like packet
 class Packet:
     def __init__(self, src_ip, dst_ip, ttl, protocol, payload):
-        self.src_ip = src_ip
-        self.dst_ip = dst_ip
-        self.ttl = ttl
-        self.protocol = protocol
-        self.payload = payload
-        self.total_length = 12 + payload.length
+        self.src_ip = src_ip    # 4 bytes
+        self.dst_ip = dst_ip    # 4 bytes
+        self.ttl = ttl          # 1 byte(time to live)
+        self.protocol = protocol    # 1 byte(upper layer protocol type)
+        self.payload = payload      # layer 4 segment
+        self.total_length = 12 + payload.length  #12 bytes for header + L4 length
 
     def decrement_ttl(self):
         self.ttl -= 1
         return self.ttl
 
+
+# Layer 2 Ethernet-like frame
 class Frame:
     def __init__(self, src_mac, dst_mac, eth_type, payload):
-        self.src_mac = src_mac
-        self.dst_mac = dst_mac
-        self.eth_type = eth_type
-        self.payload = payload
+        self.src_mac = src_mac      # 6 bytes
+        self.dst_mac = dst_mac      # 6 bytes
+        self.eth_type = eth_type    # 2 bytes
+        self.payload = payload      # layer 3 packet
